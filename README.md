@@ -11,10 +11,10 @@ This is [OpenH264](https://github.com/cisco/openh264), packaged for
 
 | Architecture / OS | Linux | MacOS | Windows |
 |-------------------|-------|-------|---------|
-| x86               | ✅    | ❌    | ✅      |
-| x86_64            | ✅    | ❌    | ✅      |
-| arm               | ✅    | ❌    | ❌      |
-| aarch64           | ✅    | ❌    | ❌      |
+| x86               | ✅    | ✅    | ✅      |
+| x86_64            | ✅    | ✅    | ✅      |
+| arm               | ✅    | ✅    | ❌      |
+| aarch64           | ✅    | ✅    | ❌      |
 
 > [!NOTE]  
 > On Windows, NASM must be installed. On Linux and macOS NASM is automatically compiled as part of the build.
