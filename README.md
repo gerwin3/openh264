@@ -15,11 +15,11 @@ This is [OpenH264](https://github.com/cisco/openh264), packaged for
 > [!NOTE]  
 > On Windows, NASM must be installed. On Linux and macOS NASM is automatically compiled as part of the build.
 
-| Zig version | Stauts |
+| Zig version | Status |
 |-------------|--------|
-| zig 12.0.0  | ✅     |
-| zig 12.0.1  | ✅     |
-| zig 13.0.0  | ✅     |
+| zig 0.12.0  | ✅     |
+| zig 0.12.1  | ✅     |
+| zig 0.13.0  | ✅     |
 
 ## Installation
 

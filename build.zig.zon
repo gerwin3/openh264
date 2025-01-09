@@ -3,8 +3,8 @@
     .version = "2.5.0-423eb2c3e47009f4e631b5e413123a003fdff1ed",
     .dependencies = .{
         .nasm = .{
-            .url = "git+https://github.com/gerwin3/nasm.git#d8fea798df035e6e48b3ee504ab2aa7dafe5e750",
-            .hash = "12204ecbc8803918c49728d5c3b2f63f5cc8186835692f6121ae97324db153c927ba",
+            .url = "git+https://github.com/gerwin3/nasm.git#632a8dd5a378cdbaa2af15f9ee3ef80366bc59ac",
+            .hash = "1220dfe01455e01120746f0eefb29aad3404446b5541552f8b3fb6cf3d8ebc7bea99",
         },
     },
     .paths = .{
