@@ -204,7 +204,8 @@ fn addLibraryProcessing(
     });
 
     obj.linkLibC();
-    obj.linkLibCpp();
+    if (target.result.abi != .msvc)
+        obj.linkLibCpp();
 
     obj.addIncludePath(b.path("codec/api/wels"));
     obj.addIncludePath(b.path("codec/common/inc"));
