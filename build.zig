@@ -129,8 +129,6 @@ fn addLibraryCommon(
 
     switch (target.result.cpu.arch) {
         .x86, .x86_64 => {
-            obj.addIncludePath(b.path("codec/common/x86/inc"));
-
             addNasmFiles(b, obj, build_config, &.{
                 "codec/common/x86/cpuid.asm",
                 "codec/common/x86/dct.asm",
@@ -145,7 +143,7 @@ fn addLibraryCommon(
             });
         },
         .arm => {
-            obj.addIncludePath(b.path("codec/common/arm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -155,10 +153,11 @@ fn addLibraryCommon(
                     "codec/common/arm/intra_pred_common_neon.S",
                     "codec/common/arm/mc_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .aarch64 => {
-            obj.addIncludePath(b.path("codec/common/armcomm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm64"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -168,10 +167,11 @@ fn addLibraryCommon(
                     "codec/common/arm64/intra_pred_common_aarch64_neon.S",
                     "codec/common/arm64/mc_aarch64_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .loongarch32, .loongarch64 => {
-            obj.addIncludePath(b.path("codec/common/loongarch/inc"));
+            obj.addIncludePath(b.path("codec/common/loongarch"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -183,6 +183,7 @@ fn addLibraryCommon(
                     "codec/common/loongarch/mc_horver_lsx.c",
                     "codec/common/loongarch/satd_sad_lasx.c",
                 },
+                .flags = build_config.flags,
             });
         },
         else => {},
@@ -242,8 +243,6 @@ fn addLibraryProcessing(
 
     switch (target.result.cpu.arch) {
         .x86, .x86_64 => {
-            obj.addIncludePath(b.path("codec/common/x86/inc"));
-
             addNasmFiles(b, obj, build_config, &.{
                 "codec/processing/src/x86/denoisefilter.asm",
                 "codec/processing/src/x86/downsample_bilinear.asm",
@@ -251,7 +250,7 @@ fn addLibraryProcessing(
             });
         },
         .arm => {
-            obj.addIncludePath(b.path("codec/common/arm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -260,10 +259,11 @@ fn addLibraryProcessing(
                     "codec/processing/src/arm/pixel_sad_neon.S",
                     "codec/processing/src/arm/vaa_calc_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .aarch64 => {
-            obj.addIncludePath(b.path("codec/common/armcomm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm64"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -272,16 +272,18 @@ fn addLibraryProcessing(
                     "codec/processing/src/arm64/pixel_sad_aarch64_neon.S",
                     "codec/processing/src/arm64/vaa_calc_aarch64_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .loongarch32, .loongarch64 => {
-            obj.addIncludePath(b.path("codec/common/loongarch/inc"));
+            obj.addIncludePath(b.path("codec/common/loongarch"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
                     "codec/processing/src/loongarch/vaa_lsx.c",
                     "codec/processing/src/loongarch/vaa_lasx.c",
                 },
+                .flags = build_config.flags,
             });
         },
         else => {},
@@ -359,8 +361,6 @@ fn addLibraryEncoder(
 
     switch (target.result.cpu.arch) {
         .x86, .x86_64 => {
-            obj.addIncludePath(b.path("codec/common/x86/inc"));
-
             addNasmFiles(b, obj, build_config, &.{
                 "codec/encoder/core/x86/coeff.asm",
                 "codec/encoder/core/x86/dct.asm",
@@ -373,7 +373,7 @@ fn addLibraryEncoder(
             });
         },
         .arm => {
-            obj.addIncludePath(b.path("codec/common/arm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -384,10 +384,11 @@ fn addLibraryEncoder(
                     "codec/encoder/core/arm/reconstruct_neon.S",
                     "codec/encoder/core/arm/svc_motion_estimation.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .aarch64 => {
-            obj.addIncludePath(b.path("codec/common/armcomm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm64"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -398,10 +399,11 @@ fn addLibraryEncoder(
                     "codec/encoder/core/arm64/reconstruct_aarch64_neon.S",
                     "codec/encoder/core/arm64/svc_motion_estimation_aarch64_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .loongarch32, .loongarch64 => {
-            obj.addIncludePath(b.path("codec/common/loongarch/inc"));
+            obj.addIncludePath(b.path("codec/common/loongarch"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
@@ -411,6 +413,7 @@ fn addLibraryEncoder(
                     "codec/encoder/core/loongarch/svc_motion_estimate_lsx.c",
                     "codec/encoder/core/loongarch/sample_lasx.c",
                 },
+                .flags = build_config.flags,
             });
         },
         else => {},
@@ -469,40 +472,41 @@ fn addLibraryDecoder(
 
     switch (target.result.cpu.arch) {
         .x86, .x86_64 => {
-            obj.addIncludePath(b.path("codec/common/x86/inc"));
-
             addNasmFiles(b, obj, build_config, &.{
                 "codec/decoder/core/x86/dct.asm",
                 "codec/decoder/core/x86/intra_pred.asm",
             });
         },
         .arm => {
-            obj.addIncludePath(b.path("codec/common/arm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
                     "codec/decoder/core/arm/block_add_neon.S",
                     "codec/decoder/core/arm/intra_pred_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .aarch64 => {
-            obj.addIncludePath(b.path("codec/common/armcomm/inc"));
+            obj.addIncludePath(b.path("codec/common/arm64"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
                     "codec/decoder/core/arm64/block_add_aarch64_neon.S",
                     "codec/decoder/core/arm64/intra_pred_aarch64_neon.S",
                 },
+                .flags = build_config.flags,
             });
         },
         .loongarch32, .loongarch64 => {
-            obj.addIncludePath(b.path("codec/common/loongarch/inc"));
+            obj.addIncludePath(b.path("codec/common/loongarch"));
 
             obj.addCSourceFiles(.{
                 .files = &.{
                     "codec/decoder/core/loongarch/mb_aux_lsx.c",
                 },
+                .flags = build_config.flags,
             });
         },
         else => {},
@@ -517,36 +521,29 @@ fn addNasmFiles(
     build_config: *const BuildConfiguration,
     comptime asm_source_files: []const []const u8,
 ) void {
-    if (build_config.use_nasm) {
-        // For x86, x86_64 we need nasm to compile the assembly code.
-        // Luckily for (most) of the other architectures clang should
-        // be able to compile the assembly just fine.
+    // For x86, x86_64 we need nasm to compile the assembly code.
+    // Luckily for (most) of the other architectures clang should
+    // be able to compile the assembly just fine.
 
-        const nasm_exe: ?*std.Build.Step.Compile = if (obj.rootModuleTarget().os.tag != .windows) blk: {
-            const nasm_dep = b.dependency("nasm", .{ .optimize = .ReleaseFast });
-            break :blk nasm_dep.artifact("nasm");
-        } else null;
+    const nasm_exe: ?*std.Build.Step.Compile = if (obj.rootModuleTarget().os.tag != .windows) blk: {
+        const nasm_dep = b.dependency("nasm", .{ .optimize = .ReleaseFast });
+        break :blk nasm_dep.artifact("nasm");
+    } else null;
 
-        inline for (asm_source_files) |asm_source_file| {
-            const asm_object_file = o_name: {
-                const basename = std.fs.path.basename(asm_source_file);
-                const ext = std.fs.path.extension(basename);
-                break :o_name b.fmt("{s}{s}", .{ basename[0 .. basename.len - ext.len], ".o" });
-            };
+    inline for (asm_source_files) |asm_source_file| {
+        const asm_object_file = o_name: {
+            const basename = std.fs.path.basename(asm_source_file);
+            const ext = std.fs.path.extension(basename);
+            break :o_name b.fmt("{s}{s}", .{ basename[0 .. basename.len - ext.len], ".o" });
+        };
 
-            const nasm_run = if (nasm_exe) |nasm_builtin| b.addRunArtifact(nasm_builtin) else b.addSystemCommand(&.{"nasm"});
-            nasm_run.addArgs(&.{ "-f", build_config.nasm_format });
-            nasm_run.addArgs(&.{ "-i", "codec/common/x86" });
-            nasm_run.addArg("-o");
-            obj.addObjectFile(nasm_run.addOutputFileArg(asm_object_file));
-            nasm_run.addArgs(build_config.nasm_flags);
-            nasm_run.addFileArg(b.path(asm_source_file));
-        }
-    } else {
-        obj.addCSourceFiles(.{
-            .files = asm_source_files,
-            .flags = build_config.flags,
-        });
+        const nasm_run = if (nasm_exe) |nasm_builtin| b.addRunArtifact(nasm_builtin) else b.addSystemCommand(&.{"nasm"});
+        nasm_run.addArgs(&.{ "-f", build_config.nasm_format });
+        nasm_run.addArgs(&.{ "-i", "codec/common/x86" });
+        nasm_run.addArg("-o");
+        obj.addObjectFile(nasm_run.addOutputFileArg(asm_object_file));
+        nasm_run.addArgs(build_config.nasm_flags);
+        nasm_run.addFileArg(b.path(asm_source_file));
     }
 }
 
