@@ -7,13 +7,16 @@ This is [OpenH264](https://github.com/cisco/openh264), packaged for
 
 | Architecture / OS | Linux | MacOS | Windows |
 |-------------------|-------|-------|---------|
-| x86               | ✅    | ✅    | ✅      |
-| x86_64            | ✅    | ✅    | ✅      |
-| arm               | ✅    | ✅    | ✅      |
-| aarch64           | ✅    | ✅    | ✅      |
+| x86               | ✅    | ❌    | ❌      |
+| x86_64            | ✅    | ❌    | ❌      |
+| arm               | ✅    | ❌    | ❌      |
+| aarch64           | ✅    | ❌    | ❌      |
 
 > [!NOTE]  
 > On Windows, NASM must be installed. On Linux and macOS NASM is automatically compiled as part of the build.
+
+* Windows support is still blocked because it does not seem possible to compile multiple source files into the same object. This is what we do to merge them together later.
+* macOS build is broken for unknown reasons (upstream NASM does support macOS so this should be relatively easy to fix).
 
 | Zig version | Status |
 |-------------|--------|
