@@ -21,6 +21,7 @@ jobs:
         include:
           - os: windows-latest
             needs_external_nasm: true
+            options: "-Dtarget=native-native-msvc"
 
     runs-on: ${{ matrix.os }}
     steps:
@@ -37,4 +38,4 @@ jobs:
           version: ${{ matrix.zig-version }}
 
       - name: Build
-        run: zig build --release=fast --summary all
+        run: zig build ${{ matrix.options }} --release=fast --summary all
