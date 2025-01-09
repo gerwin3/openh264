@@ -7,8 +7,8 @@ This is [OpenH264](https://github.com/cisco/openh264), packaged for
 
 | Architecture / OS | Linux | MacOS | Windows |
 |-------------------|-------|-------|---------|
-| x86               | ✅    | ❌    | ❌      |
-| x86_64            | ✅    | ❌    | ❌      |
+| x86               | ✅    | ❌    | ✅      |
+| x86_64            | ✅    | ❌    | ✅      |
 | arm               | ✅    | ❌    | ❌      |
 | aarch64           | ✅    | ❌    | ❌      |
 
