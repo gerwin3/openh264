@@ -517,30 +517,42 @@ fn addNasmFiles(
     build_config: *const BuildConfiguration,
     comptime asm_source_files: []const []const u8,
 ) void {
-    const nasm_exe: ?*std.Build.Step.Compile = if (obj.rootModuleTarget().os.tag != .windows) blk: {
-        const nasm_dep = b.dependency("nasm", .{ .optimize = .ReleaseFast });
-        break :blk nasm_dep.artifact("nasm");
-    } else null;
+    if (build_config.use_nasm) {
+        // For x86, x86_64 we need nasm to compile the assembly code.
+        // Luckily for (most) of the other architectures clang should
+        // be able to compile the assembly just fine.
 
-    inline for (asm_source_files) |asm_source_file| {
-        const asm_object_file = o_name: {
-            const basename = std.fs.path.basename(asm_source_file);
-            const ext = std.fs.path.extension(basename);
-            break :o_name b.fmt("{s}{s}", .{ basename[0 .. basename.len - ext.len], ".o" });
-        };
+        const nasm_exe: ?*std.Build.Step.Compile = if (obj.rootModuleTarget().os.tag != .windows) blk: {
+            const nasm_dep = b.dependency("nasm", .{ .optimize = .ReleaseFast });
+            break :blk nasm_dep.artifact("nasm");
+        } else null;
 
-        const nasm_run = if (nasm_exe) |nasm_builtin| b.addRunArtifact(nasm_builtin) else b.addSystemCommand(&.{"nasm"});
-        nasm_run.addArgs(&.{ "-f", build_config.nasm_format });
-        nasm_run.addArgs(&.{ "-i", "codec/common/x86" });
-        nasm_run.addArg("-o");
-        obj.addObjectFile(nasm_run.addOutputFileArg(asm_object_file));
-        nasm_run.addArgs(build_config.nasm_flags);
-        nasm_run.addFileArg(b.path(asm_source_file));
+        inline for (asm_source_files) |asm_source_file| {
+            const asm_object_file = o_name: {
+                const basename = std.fs.path.basename(asm_source_file);
+                const ext = std.fs.path.extension(basename);
+                break :o_name b.fmt("{s}{s}", .{ basename[0 .. basename.len - ext.len], ".o" });
+            };
+
+            const nasm_run = if (nasm_exe) |nasm_builtin| b.addRunArtifact(nasm_builtin) else b.addSystemCommand(&.{"nasm"});
+            nasm_run.addArgs(&.{ "-f", build_config.nasm_format });
+            nasm_run.addArgs(&.{ "-i", "codec/common/x86" });
+            nasm_run.addArg("-o");
+            obj.addObjectFile(nasm_run.addOutputFileArg(asm_object_file));
+            nasm_run.addArgs(build_config.nasm_flags);
+            nasm_run.addFileArg(b.path(asm_source_file));
+        }
+    } else {
+        obj.addCSourceFiles(.{
+            .files = asm_source_files,
+            .flags = build_config.flags,
+        });
     }
 }
 
 const BuildConfiguration = struct {
     flags: []const []const u8,
+    use_nasm: bool,
     nasm_flags: []const []const u8,
     nasm_format: []const u8,
 };
@@ -550,21 +562,25 @@ fn makeBuildConfiguration(target: std.Target) BuildConfiguration {
         .linux => switch (target.cpu.arch) {
             .x86 => .{
                 .flags = &.{ "-DHAVE_AVX2", "-DX86_ASM", "-DX86_32_ASM" },
+                .use_nasm = true,
                 .nasm_flags = &.{ "-DX86_32", "-DHAVE_AVX2" },
                 .nasm_format = "elf",
             },
             .x86_64 => .{
                 .flags = &.{ "-DHAVE_AVX2", "-DX86_ASM" },
+                .use_nasm = true,
                 .nasm_flags = &.{ "-DUNIX64", "-DHAVE_AVX2" },
                 .nasm_format = "elf64",
             },
             .arm => .{
                 .flags = &.{"-DHAVE_NEON"},
+                .use_nasm = false,
                 .nasm_flags = &.{},
                 .nasm_format = "elf",
             },
             .aarch64 => .{
                 .flags = &.{"-DHAVE_NEON_AARCH64"},
+                .use_nasm = false,
                 .nasm_flags = &.{},
                 .nasm_format = "elf64",
             },
@@ -577,21 +593,25 @@ fn makeBuildConfiguration(target: std.Target) BuildConfiguration {
         .macos, .ios => switch (target.cpu.arch) {
             .x86 => .{
                 .flags = &.{ "-DHAVE_AVX2", "-DX86_ASM", "-DX86_32_ASM" },
+                .use_nasm = true,
                 .nasm_flags = &.{ "-DX86_32", "-DHAVE_AVX2" },
                 .nasm_format = "macho32",
             },
             .x86_64 => .{
                 .flags = &.{ "-DHAVE_AVX2", "-DX86_ASM" },
+                .use_nasm = true,
                 .nasm_flags = &.{ "-DUNIX64", "-DHAVE_AVX2" },
                 .nasm_format = "macho64",
             },
             .arm => .{
                 .flags = &.{"-DHAVE_NEON"},
+                .use_nasm = false,
                 .nasm_flags = &.{},
                 .nasm_format = "macho32",
             },
             .aarch64 => .{
                 .flags = &.{"-DHAVE_NEON_AARCH64"},
+                .use_nasm = false,
                 .nasm_flags = &.{},
                 .nasm_format = "macho64",
             },
@@ -600,11 +620,13 @@ fn makeBuildConfiguration(target: std.Target) BuildConfiguration {
         .windows => switch (target.cpu.arch) {
             .x86 => .{
                 .flags = &.{},
+                .use_nasm = true,
                 .nasm_flags = &.{ "-DPREFIX", "-DX86_32" },
                 .nasm_format = "win32",
             },
             .x86_64 => .{
                 .flags = &.{},
+                .use_nasm = true,
                 .nasm_flags = &.{"-DWIN64"},
                 .nasm_format = "win64",
             },
