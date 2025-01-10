@@ -21,9 +21,9 @@ This is [OpenH264](https://github.com/cisco/openh264), packaged for
 
 | Zig version | Status |
 |-------------|--------|
-| zig 0.12.0  | ✅     |
-| zig 0.12.1  | ✅     |
-| zig 0.13.0  | ✅     |
+| 0.12.0      | ✅     |
+| 0.12.1      | ✅     |
+| 0.13.0      | ✅     |
 
 ## Installation
 
