@@ -3,10 +3,6 @@
 This is [OpenH264](https://github.com/cisco/openh264), packaged for
 [Zig](https://ziglang.org/).
 
-## Progress
-
-- [ ] macOS support: Still broken due to assembly parts not linking on correctly (WIP).
-
 ## Support
 
 | Architecture / OS | Linux | MacOS | Windows |
