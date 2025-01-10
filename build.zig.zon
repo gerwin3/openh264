@@ -1,7 +1,11 @@
 .{
     .name = "openh264",
-    .version = "2.5.0-423eb2c3e47009f4e631b5e413123a003fdff1ed",
+    .version = "2.5.0",
     .dependencies = .{
+        .openh264 = .{
+            .url = "https://github.com/cisco/openh264/archive/refs/tags/v2.5.0.tar.gz",
+            .hash = "1220ffe1ffbd1a55bd014e2534671c55a95c5088c3783ad79dba92f7059fe0fc7bd8",
+        },
         .nasm = .{
             .url = "git+https://github.com/gerwin3/nasm.git#632a8dd5a378cdbaa2af15f9ee3ef80366bc59ac",
             .hash = "1220dfe01455e01120746f0eefb29aad3404446b5541552f8b3fb6cf3d8ebc7bea99",
