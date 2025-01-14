@@ -81,15 +81,6 @@ Windows](https://github.com/allyourcodebase/nasm/issues/3) at this time.
 
 ## Contribute
 
-This repo is a stripped down version of the original OpenH264 repository:
-
-* The console application has been removed.
-* All testing code has been removed. Testing is not part of this package.
-* All build stuff has been replaced with Zig.
-
-In practice this means that only the `codec` directory remains, since it
-contains the sources.
-
 It should work on most platforms and architectures, but has only been tested on
 Linux x86_64. If anything is broken or missing please inspect `build.zig` and
 update accordingly. Use the original Meson build files as reference.
