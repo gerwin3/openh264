@@ -2,6 +2,8 @@ const std = @import("std");
 
 const openh264_bindings = @import("openh264_bindings");
 
+const openh264_log = std.log.scoped(.openh264_log);
+
 /// This value is hardcoded since OpenH264 only supports YUV420 as input color
 /// format.
 const format = openh264_bindings.EVideoFormatType.i420;
@@ -100,6 +102,7 @@ pub const Encoder = struct {
         width: u32,
         height: u32,
     },
+    parameter_sets: []u8,
 
     /// Store bitstream info. This variables holds the output bitstream of the
     /// encoder. It is reused for each frame to avoid unnecessary allocations.
@@ -130,7 +133,9 @@ pub const Encoder = struct {
         };
 
         try rc(inner_vtable.Initialize.?(inner, &parameters));
-        errdefer _ = inner_vtable.Uninitialize.?(inner);
+        errdefer rc(inner_vtable.Uninitialize.?(inner)) catch |err| {
+            openh264_log.err("failed to uniniialize encoder (err = {})", .{err});
+        };
 
         // only yuv420 is supported so we must set this
         try rc(inner_vtable.SetOption.?(inner, .dataformat, &format));
@@ -141,6 +146,7 @@ pub const Encoder = struct {
                 .width = options.resolution.width,
                 .height = options.resolution.height,
             },
+            .parameter_sets = undefined,
             .allocator = allocator,
         };
 
@@ -159,11 +165,30 @@ pub const Encoder = struct {
         if (options.parameter_set_strategy) |value|
             try encoder.set_parameter_set_strategy(value);
 
+        var parameter_sets_bitstream = std.mem.zeroes(openh264_bindings.SFrameBSInfo);
+        try rc(inner_vtable.EncodeParameterSets.?(inner, &parameter_sets_bitstream));
+
+        encoder.parameter_sets = blk: {
+            var parameter_sets = std.ArrayList(u8).init(allocator);
+            errdefer parameter_sets.deinit();
+
+            try pump_bitstream_data(&parameter_sets_bitstream, parameter_sets.writer());
+            const parameter_sets_slice = try parameter_sets.toOwnedSlice();
+
+            break :blk parameter_sets_slice;
+        };
+        errdefer allocator.free(encoder.parameter_sets);
+
         return encoder;
     }
 
     pub fn deinit(self: *const Encoder) void {
-        _ = self.get_inner_vtable().Uninitialize.?(self.inner);
+        self.allocator.free(self.parameter_sets);
+
+        rc(self.get_inner_vtable().Uninitialize.?(self.inner)) catch |err| {
+            openh264_log.err("failed to uninitialize encoder (err = {})", .{err});
+        };
+
         openh264_bindings.WelsDestroySVCEncoder(self.inner);
     }
 
@@ -191,6 +216,8 @@ pub const Encoder = struct {
             .uiTimeStamp = @intCast(frame.timestamp),
         };
 
+        self.bitstream_info = std.mem.zeroes(openh264_bindings.SFrameBSInfo);
+
         try rc(self.get_inner_vtable().EncodeFrame.?(
             self.inner,
             &source_picture,
@@ -200,16 +227,7 @@ pub const Encoder = struct {
         if (self.bitstream_info.eFrameType == .invalid) return error.InvalidFrame;
         if (self.bitstream_info.eFrameType == .skip) return;
 
-        for (0..@intCast(self.bitstream_info.iLayerNum)) |layer_index| {
-            const layer = self.bitstream_info.sLayerInfo[layer_index];
-            var nal_offset: usize = 0;
-            for (0..@intCast(layer.iNalCount)) |nal_index| {
-                const nal_len: usize = @intCast(layer.pNalLengthInByte[nal_index]);
-                const nal_data = layer.pBsBuf[nal_offset .. nal_offset + nal_len];
-                try writer.writeAll(nal_data);
-                nal_offset += nal_len;
-            }
-        }
+        try pump_bitstream_data(&self.bitstream_info, writer);
     }
 
     pub fn get_idr_interval(self: *const Encoder) !u32 {
@@ -297,6 +315,19 @@ pub const Encoder = struct {
     }
 };
 
+fn pump_bitstream_data(bitstream: *const openh264_bindings.SFrameBSInfo, writer: anytype) !void {
+    for (0..@intCast(bitstream.iLayerNum)) |layer_index| {
+        const layer = bitstream.sLayerInfo[layer_index];
+        var nal_offset: usize = 0;
+        for (0..@intCast(layer.iNalCount)) |nal_index| {
+            const nal_len: usize = @intCast(layer.pNalLengthInByte[nal_index]);
+            const nal_data = layer.pBsBuf[nal_offset .. nal_offset + nal_len];
+            try writer.writeAll(nal_data);
+            nal_offset += nal_len;
+        }
+    }
+}
+
 pub const VideoBitstreamType = openh264_bindings.VideoBitstreamType;
 
 pub const ErrorConcealment = openh264_bindings.ErrorConIdc;
@@ -345,7 +376,9 @@ pub const Decoder = struct {
         };
 
         try rc(inner_vtable.Initialize.?(inner, &parameters));
-        errdefer _ = inner_vtable.Uninitialize.?(inner);
+        errdefer rc(inner_vtable.Uninitialize.?(inner)) catch |err| {
+            openh264_log.err("failed to uninitialize decoder (err = {})", .{err});
+        };
 
         const decoder = Decoder{
             .inner = inner.?,
@@ -356,7 +389,10 @@ pub const Decoder = struct {
     }
 
     pub fn deinit(self: *const Decoder) void {
-        _ = self.get_inner_vtable().Uninitialize.?(self.inner);
+        rc(self.get_inner_vtable().Uninitialize.?(self.inner)) catch |err| {
+            openh264_log.err("failed to uninitialize decoder (err = {})", .{err});
+        };
+
         openh264_bindings.WelsDestroyDecoder(self.inner);
     }
 

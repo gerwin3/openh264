@@ -26,6 +26,8 @@ pub fn main() !void {
     });
     defer encoder.deinit();
 
+    std.debug.print("parameter sets: {any}", .{encoder.parameter_sets});
+
     var frame = try openh264.Frame.alloc(1920, 1080, allocator);
     defer frame.free(allocator);
 
