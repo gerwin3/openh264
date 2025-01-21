@@ -10,7 +10,7 @@ pub fn main() !void {
 
     const allocator = general_purpose_allocator.allocator();
 
-    var decoder = try openh264.Decoder.init(allocator, .{});
+    var decoder = try openh264.Decoder.init(.{}, allocator);
     defer decoder.deinit();
 
     const file = try std.fs.cwd().openFile("rainbow.264", .{});

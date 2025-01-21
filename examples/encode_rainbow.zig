@@ -21,9 +21,10 @@ pub fn main() !void {
     defer file.close();
     const writer = file.writer();
 
-    var encoder = try openh264.Encoder.init(allocator, .{
-        .resolution = .{ .width = 1920, .height = 1080 },
-    });
+    var encoder = try openh264.Encoder.init(
+        .{ .resolution = .{ .width = 1920, .height = 1080 } },
+        allocator,
+    );
     defer encoder.deinit();
 
     std.debug.print("parameter sets: {any}", .{encoder.parameter_sets});

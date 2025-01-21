@@ -110,7 +110,7 @@ pub const Encoder = struct {
 
     allocator: std.mem.Allocator,
 
-    pub fn init(allocator: std.mem.Allocator, options: EncoderOptions) !Encoder {
+    pub fn init(options: EncoderOptions, allocator: std.mem.Allocator) !Encoder {
         var inner: ?*openh264_bindings.ISVCEncoder = null;
         try rc(openh264_bindings.WelsCreateSVCEncoder(&inner));
         std.debug.assert(inner != null);
@@ -354,7 +354,7 @@ pub const Decoder = struct {
 
     allocator: std.mem.Allocator,
 
-    pub fn init(allocator: std.mem.Allocator, options: DecoderOptions) !Decoder {
+    pub fn init(options: DecoderOptions, allocator: std.mem.Allocator) !Decoder {
         var inner: ?*openh264_bindings.ISVCDecoder = null;
         try rc(openh264_bindings.WelsCreateDecoder(&inner));
         std.debug.assert(inner != null);
