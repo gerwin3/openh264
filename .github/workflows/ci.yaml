@@ -12,7 +12,7 @@ on:
 jobs:
 
   test:
-    name: build / ${{ matrix.os.name }} / zig ${{ matrix.zig-version }} / ${{ matrix.mode.name }}
+    name: test / ${{ matrix.os.name }} / zig ${{ matrix.zig-version }} / ${{ matrix.mode.name }}
 
     strategy:
       fail-fast: false
@@ -53,5 +53,5 @@ jobs:
         with:
           version: ${{ matrix.zig-version }}
 
-      - name: Build
+      - name: Test
         run: zig build test ${{ matrix.mode.options }} --summary all
