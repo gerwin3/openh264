@@ -529,7 +529,7 @@ pub const Decoder = struct {
         const width: u32 = @intCast(buffer_info.UsrData.sSystemBuffer.iWidth);
         const height: u32 = @intCast(buffer_info.UsrData.sSystemBuffer.iHeight);
         const stride_y: u32 = @intCast(buffer_info.UsrData.sSystemBuffer.iStride[0]);
-        const stride_uv: u32 = @as(u32, @intCast(buffer_info.UsrData.sSystemBuffer.iStride[1])) / 2;
+        const stride_uv: u32 = @as(u32, @intCast(buffer_info.UsrData.sSystemBuffer.iStride[1]));
         return Frame{
             .data = .{
                 .y = frame_pointers[0][0 .. height * stride_y],

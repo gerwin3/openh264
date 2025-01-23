@@ -87,6 +87,16 @@ pub fn build(b: *std.Build) void {
     });
     example_decode_rainbow.root_module.addImport("openh264", openh264);
     b.installArtifact(example_decode_rainbow);
+
+    const test_suite = b.addTest(.{
+        .root_source_file = b.path("test.zig"),
+        .target = target,
+        .optimize = optimize,
+    });
+    test_suite.root_module.addImport("openh264", openh264);
+
+    const test_step = b.step("test", "Run tests");
+    test_step.dependOn(&b.addRunArtifact(test_suite).step);
 }
 
 fn addLibraryCommon(

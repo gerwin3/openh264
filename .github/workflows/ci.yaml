@@ -10,19 +10,36 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
-    name: build / ${{ matrix.os }} / zig ${{ matrix.zig-version }}
+
+  test:
+    name: build / ${{ matrix.os.name }} / zig ${{ matrix.zig-version }} / ${{ matrix.mode.name }}
 
     strategy:
       fail-fast: false
       matrix:
-        zig-version: ["0.12.0", "0.12.1", "0.13.0"]
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        os:
+          - name: "linux"
+            runner: "ubuntu-latest"
+          - name: "macos"
+            runner: "macos-latest"
+          - name: "windows"
+            runner: "windows-latest"
+        zig-version:
+          - "0.12.0"
+          - "0.12.1"
+          - "0.13.0"
+        mode:
+          - name: debug
+            options: ""
+          - name: release safe
+            options: "--release=safe"
+          - name: release fast
+            options: "--release=fast"
         include:
-          - os: windows-latest
+          - os: { name: windows }
             needs_external_nasm: true
 
-    runs-on: ${{ matrix.os }}
+    runs-on: ${{ matrix.os.runner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -37,4 +54,4 @@ jobs:
           version: ${{ matrix.zig-version }}
 
       - name: Build
-        run: zig build ${{ matrix.options }} --release=fast --summary all
+        run: zig build test ${{ matrix.mode.options }} --summary all
