@@ -2,8 +2,6 @@ const std = @import("std");
 
 const openh264_bindings = @import("openh264_bindings");
 
-const openh264_log = std.log.scoped(.openh264_log);
-
 /// This value is hardcoded since OpenH264 only supports YUV420 as input color
 /// format.
 const format = openh264_bindings.EVideoFormatType.i420;
@@ -133,9 +131,7 @@ pub const Encoder = struct {
         };
 
         try rc(inner_vtable.Initialize.?(inner, &parameters));
-        errdefer rc(inner_vtable.Uninitialize.?(inner)) catch |err| {
-            openh264_log.err("failed to uniniialize encoder (err = {})", .{err});
-        };
+        errdefer rc(inner_vtable.Uninitialize.?(inner)) catch unreachable;
 
         // only yuv420 is supported so we must set this
         try rc(inner_vtable.SetOption.?(inner, .dataformat, &format));
@@ -185,9 +181,7 @@ pub const Encoder = struct {
     pub fn deinit(self: *const Encoder) void {
         self.allocator.free(self.parameter_sets);
 
-        rc(self.get_inner_vtable().Uninitialize.?(self.inner)) catch |err| {
-            openh264_log.err("failed to uninitialize encoder (err = {})", .{err});
-        };
+        rc(self.get_inner_vtable().Uninitialize.?(self.inner)) catch unreachable;
 
         openh264_bindings.WelsDestroySVCEncoder(self.inner);
     }
@@ -376,9 +370,7 @@ pub const Decoder = struct {
         };
 
         try rc(inner_vtable.Initialize.?(inner, &parameters));
-        errdefer rc(inner_vtable.Uninitialize.?(inner)) catch |err| {
-            openh264_log.err("failed to uninitialize decoder (err = {})", .{err});
-        };
+        errdefer rc(inner_vtable.Uninitialize.?(inner)) catch unreachable;
 
         const decoder = Decoder{
             .inner = inner.?,
@@ -389,9 +381,7 @@ pub const Decoder = struct {
     }
 
     pub fn deinit(self: *const Decoder) void {
-        rc(self.get_inner_vtable().Uninitialize.?(self.inner)) catch |err| {
-            openh264_log.err("failed to uninitialize decoder (err = {})", .{err});
-        };
+        rc(self.get_inner_vtable().Uninitialize.?(self.inner)) catch unreachable;
 
         openh264_bindings.WelsDestroyDecoder(self.inner);
     }
