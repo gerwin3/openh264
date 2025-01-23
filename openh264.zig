@@ -78,6 +78,11 @@ pub const EncoderOptions = struct {
     },
     max_frame_rate: f32 = 30.0,
     target_bitrate: u32 = 5_000_000,
+    // TODO: Currently some of the encoder settings do not make sense. We
+    // select quality mode here (supposedly that is CQP) but have no way to set
+    // the QP so there is no point. Extra parameters are found in EncParamsExt
+    // which we should be using and also we need to fix up the data structure
+    // here similar to NVIDIA enc.
     rate_control_mode: RateControlMode = .quality_mode,
     trace_level: TraceLevel = .err,
 
