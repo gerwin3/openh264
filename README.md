@@ -3,23 +3,27 @@
 This is [OpenH264](https://github.com/cisco/openh264), packaged for
 [Zig](https://ziglang.org/).
 
+## Progress
+
+- [ ] macOS support: Still broken due to assembly parts not linking on correctly (WIP).
+
 ## Support
 
 | Architecture / OS | Linux | MacOS | Windows |
 |-------------------|-------|-------|---------|
-| x86               | ✅    | ✅    | ✅      |
-| x86_64            | ✅    | ✅    | ✅      |
-| arm               | ✅    | ✅    | ❌      |
-| aarch64           | ✅    | ✅    | ❌      |
+| x86               | ✅    | ❌    | ✅      |
+| x86_64            | ✅    | ❌    | ✅      |
+| arm               | ✅    | ❌    | ❌      |
+| aarch64           | ✅    | ❌    | ❌      |
 
 > [!NOTE]  
 > On Windows, NASM must be installed. On Linux and macOS NASM is automatically compiled as part of the build.
 
 | Zig version | Status |
 |-------------|--------|
-| 0.12.0      | ✅     |
-| 0.12.1      | ✅     |
-| 0.13.0      | ✅     |
+| zig 0.12.0  | ✅     |
+| zig 0.12.1  | ✅     |
+| zig 0.13.0  | ✅     |
 
 ## Installation
 
@@ -73,6 +77,12 @@ your_compilation.linkLibrary(openh264_dep.artifact("openh264"));
 
 This will provide OpenH264 as a static library to `your_compilation` without the
 included bindings.
+
+## H.264 Patent Disclaimer
+
+This project uses H.264 technology and may be subject to patent licenses. This
+project deliberately only distributes source code, and thus the burden of
+compyling with patent and licensing law remains with the user.
 
 ## Contribute
 
