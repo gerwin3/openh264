@@ -77,6 +77,8 @@ pub const EncoderOptions = struct {
         height: u32,
     },
     max_frame_rate: f32 = 30.0,
+    // TODO: Default bitrate value seems like not such a good idea. Either
+    // force user to choose or have default QP settings which is more sensible.
     target_bitrate: u32 = 5_000_000,
     // TODO: Currently some of the encoder settings do not make sense. We
     // select quality mode here (supposedly that is CQP) but have no way to set
