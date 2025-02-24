@@ -74,6 +74,12 @@ your_compilation.linkLibrary(openh264_dep.artifact("openh264"));
 This will provide OpenH264 as a static library to `your_compilation` without the
 included bindings.
 
+## H.264 Patent Disclaimer
+
+This project uses H.264 technology and may be subject to patent licenses. This
+project deliberately only distributes source code, and thus the burden of
+compyling with patent and licensing law remains with the user.
+
 ## Contribute
 
 It should work on most platforms and architectures, but has only been tested on
